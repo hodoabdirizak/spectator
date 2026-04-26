@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atelier — Skin, Hair & Body</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F4F0EA;   /* warm cream — page background */
+      --surface:   #EAE3D5;   /* darker cream — bands / hero */
+      --paper:     #F8F5EE;   /* lightest cream — cards */
+      --ink:       #1A1A1A;   /* primary text — near-black */
+      --ink-soft:  #4A4641;   /* body text */
+      --ink-mute:  #6F6963;   /* secondary */
+      --rule:      #D9D2C2;   /* divider lines */
+      --rule-2:    #BBB2A0;   /* stronger divider */
+      --forest:    #1F2A1A;   /* deep botanical — buttons */
+      --olive:     #4F5C42;   /* secondary accent */
+      --rust:      #8C4A2E;   /* warm error */
+
+      --serif: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+      --sans:  'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.55;
+      letter-spacing: 0.005em;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--rule);
+      height: 64px;
+      display: flex; align-items: center;
+      padding: 0 40px;
+      gap: 32px;
+    }
+    .brand {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+      text-transform: uppercase;
+    }
+    .brand-sub {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex; gap: 28px;
+      margin-left: 16px;
+    }
+    .nav-links a {
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding: 22px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+    .nav-right {
+      margin-left: auto;
+      display: flex; align-items: center;
+      gap: 24px;
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .nav-right a:hover { color: var(--ink); }
+    .nav-right .bag {
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .nav-right .bag-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--forest);
+      color: var(--paper);
+      border-radius: 9px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    /* ── RECORDING PILL ── */
+    #rec-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 11px;
+      border: 1px solid var(--rule-2);
+      background: transparent;
+      color: var(--ink-soft);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #rec-indicator.visible { opacity: 1; }
+    #rec-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--rust);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.35; transform: scale(0.8); }
+    }
+    #event-count {
+      font-feature-settings: "tnum";
+      letter-spacing: 0.06em;
+      color: var(--ink-mute);
+    }
+
+    /* ── EDITORIAL HERO ── */
+    .editorial {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 96px 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .editorial-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 28px;
+    }
+    .editorial-title {
+      font-family: var(--serif);
+      font-size: 64px;
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+    .editorial-title em {
+      font-style: italic;
+    }
+    .editorial-body {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      max-width: 460px;
+      margin-bottom: 36px;
+    }
+    .editorial-actions {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .editorial-image {
+      aspect-ratio: 4/5;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .editorial-image img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px;
+      height: 48px;
+      padding: 0 28px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+      border-radius: 0;
+    }
+    .btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn-solid {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn-solid:hover {
+      background: var(--forest);
+      border-color: var(--forest);
+    }
+    .btn-ghost {
+      border-color: var(--rule-2);
+      color: var(--ink-soft);
+    }
+    .btn-ghost:hover {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+    .btn-full { width: 100%; }
+
+    /* ── SECTION SCAFFOLD ── */
+    .section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+    .section-divider {
+      border-top: 1px solid var(--rule);
+    }
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 56px;
+    }
+    .section-head h2 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+    }
+    .section-head .meta {
+      font-size: 11px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+
+    /* ── CATEGORY STRIP ── */
+    .cats {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    .cats-inner {
+      display: flex;
+      gap: 36px;
+      height: 56px;
+      align-items: center;
+      overflow-x: auto;
+    }
+    .cats-inner a {
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      white-space: nowrap;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .cats-inner a:hover { color: var(--ink); }
+    .cats-inner a.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    /* ── PRODUCT GRID ── */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 56px 40px;
+    }
+    @media (max-width: 1000px) {
+      .products { grid-template-columns: repeat(2, 1fr); gap: 40px 24px; }
+    }
+    .card {
+      cursor: pointer;
+      display: flex; flex-direction: column;
+    }
+    .card-img {
+      aspect-ratio: 1;
+      background: var(--surface);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease, opacity 0.3s;
+    }
+    .card:hover .card-img img { transform: scale(1.025); }
+
+    .card-tag {
+      position: absolute; top: 16px; left: 16px;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--rule-2);
+    }
+    .card-tag.bestseller { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+    .card-name {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.005em;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--ink-mute);
+      margin-bottom: 14px;
+      line-height: 1.55;
+    }
+    .card-meta {
+      display: flex; align-items: baseline; justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.05em;
+    }
+    .card-vol {
+      text-transform: lowercase;
+      color: var(--ink-mute);
+    }
+    .card-price {
+      font-family: var(--sans);
+      font-weight: 500;
+      color: var(--ink);
+      font-feature-settings: "tnum";
+    }
+    .card-cta {
+      margin-top: 16px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink);
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--ink);
+      align-self: flex-start;
+      cursor: pointer;
+      background: transparent;
+      border-top: none; border-left: none; border-right: none;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .card-cta:hover { color: var(--ink-soft); border-bottom-color: var(--ink-soft); }
+
+    /* ── EDITORIAL BAND ── */
+    .essay {
+      background: var(--surface);
+      padding: 96px 40px;
+    }
+    .essay-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .essay-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 24px;
+    }
+    .essay-quote {
+      font-family: var(--serif);
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--ink);
+      letter-spacing: -0.003em;
+      margin-bottom: 28px;
+    }
+    .essay-body {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      max-width: 600px;
+    }
+    .essay-attr {
+      display: block;
+      margin-top: 24px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+
+    /* ── CHECKOUT ── */
+    .checkout-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 96px 40px;
+    }
+    .checkout-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 96px;
+    }
+    @media (max-width: 900px) {
+      .checkout-inner { grid-template-columns: 1fr; gap: 56px; }
+    }
+    .checkout-intro h2 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      margin-bottom: 18px;
+    }
+    .checkout-intro p {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.75;
+      margin-bottom: 18px;
+      max-width: 440px;
+    }
+    .checkout-intro code {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 12px;
+      background: var(--paper);
+      padding: 2px 7px;
+      border: 1px solid var(--rule);
+    }
+    .bullets {
+      list-style: none;
+      margin-top: 24px;
+    }
+    .bullets li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+    .bullets svg {
+      width: 14px; height: 14px;
+      color: var(--forest);
+      flex-shrink: 0; margin-top: 5px;
+    }
+
+    .form-group { margin-bottom: 24px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 10px;
+    }
+    .form-input {
+      width: 100%;
+      height: 46px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--rule-2);
+      padding: 0 0 6px;
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+      border-radius: 0;
+      transition: border-color 0.15s;
+    }
+    .form-input::placeholder { color: var(--ink-mute); font-weight: 300; }
+    .form-input:focus { border-bottom-color: var(--ink); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .mask-note {
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .mask-note svg { width: 11px; height: 11px; color: var(--ink-mute); }
+
+    .total-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      margin-top: 32px;
+    }
+    .total-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .total-amount {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--ink);
+      font-feature-settings: "tnum";
+    }
+
+    /* ── SESSION ID PILL ── */
+    #session-id-display {
+      position: fixed; bottom: 24px; left: 24px; z-index: 200;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      padding: 7px 12px;
+      border-radius: 0;
+      opacity: 0.9;
+    }
+    #session-id-display:empty { display: none; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px; z-index: 300;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px 20px;
+      font-size: 12px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--rule);
+      padding: 56px 40px 40px;
+      margin-top: 0;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .footer-cols {
+      display: flex; gap: 56px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+    }
+    .footer-cols div { display: flex; flex-direction: column; gap: 8px; }
+    .footer-cols strong {
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 6px;
+    }
+    .footer-note {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── TOP NAV ─── -->
+<div class="topbar">
+  <div>
+    <div class="brand">Atelier</div>
+    <div class="brand-sub">Skin · Hair · Body</div>
+  </div>
+  <div class="nav-links">
+    <a class="active" href="#">Shop</a>
+    <a href="#">Read</a>
+    <a href="#">Stores</a>
+    <a href="#">Stories</a>
+  </div>
+  <div class="nav-right">
+    <div id="rec-indicator">
+      <div id="rec-dot"></div>
+      <span>Recording</span>
+      <span id="event-count">0 events</span>
+    </div>
+    <a href="#">Account</a>
+    <a class="bag" href="#">Bag <span class="bag-count" id="cart-badge">0</span></a>
+  </div>
+</div>
+
+<!-- ─── EDITORIAL HERO ─── -->
+<div class="editorial">
+  <div>
+    <p class="editorial-eyebrow">Spring Collection · 2026</p>
+    <h1 class="editorial-title">Considered<br/>formulations,<br/><em>recorded with care.</em></h1>
+    <p class="editorial-body">
+      Skin, hair and body products formulated with diligence and care.
+      Every interaction with the store — every click, scroll and field —
+      is captured by Spectator and replayed in full, with sensitive inputs
+      masked at source.
+    </p>
+    <div class="editorial-actions">
+      <button class="btn btn-solid" onclick="startRecording()">Begin recording</button>
+      <button class="btn btn-ghost" onclick="stopRecording()">End session</button>
+    </div>
+  </div>
+  <div class="editorial-image">
+    <img
+      src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1000&q=80&auto=format&fit=crop"
+      alt="Apothecary still life" loading="eager" />
+  </div>
+</div>
+
+<!-- ─── CATEGORY STRIP ─── -->
+<div class="cats">
+  <div class="cats-inner">
+    <a class="active" href="#">All products</a>
+    <a href="#">Skin</a>
+    <a href="#">Body</a>
+    <a href="#">Hair</a>
+    <a href="#">Hand</a>
+    <a href="#">Fragrance</a>
+    <a href="#">Home</a>
+    <a href="#">Kits &amp; Travel</a>
+  </div>
+</div>
+
+<!-- ─── PRODUCT GRID ─── -->
+<div class="section">
+  <div class="section-head">
+    <h2>Notable formulations</h2>
+    <span class="meta">Eight of forty-two</span>
+  </div>
+  <div class="products" id="products"></div>
+</div>
+
+<!-- ─── EDITORIAL ESSAY BAND ─── -->
+<div class="essay">
+  <div class="essay-inner">
+    <p class="essay-eyebrow">A note on observation</p>
+    <p class="essay-quote">
+      "The best record of a thing is the one that interferes with it least.
+      We watch in order to understand, never to surveil."
+    </p>
+    <p class="essay-body">
+      Spectator captures the structure of a page and every change made to
+      it — additions, removals, the smallest text edits — and reconstructs
+      the visit in a sandboxed iframe. Form fields marked
+      <code style="font-family:'JetBrains Mono',monospace; font-size:13px; background:#F4F0EA; padding:2px 6px; border:1px solid var(--rule);">data-spectator-mask</code>
+      never leave the browser intact: card numbers, expiries and security
+      codes are replaced with bullets at capture time, before any byte is
+      sent to the server.
+    </p>
+    <span class="essay-attr">— Spectator engineering, 2026</span>
+  </div>
+</div>
+
+<!-- ─── CHECKOUT ─── -->
+<div class="checkout-section" id="checkout">
+  <div class="checkout-inner">
+    <div class="checkout-intro">
+      <h2>Place order</h2>
+      <p>
+        Fields marked
+        <code>data-spectator-mask</code>
+        are replaced with bullets before the event leaves the browser.
+        Sensitive data is never recorded, never persisted, never replayed.
+      </p>
+      <ul class="bullets">
+        <li>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7.5l3 3L11 4"/></svg>
+          Card number, expiry and security code masked at capture time
+        </li>
+        <li>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7.5l3 3L11 4"/></svg>
+          Name and email recorded (toggleable via SDK config)
+        </li>
+        <li>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7.5l3 3L11 4"/></svg>
+          Open localhost:5173 in a second tab to watch the replay
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="form-group">
+        <label class="form-label" for="name">Full name</label>
+        <input type="text" class="form-input" id="name" placeholder="Maya Patel" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="email">Email address</label>
+        <input type="email" class="form-input" id="email" placeholder="maya@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="card">Card number</label>
+        <input type="text" class="form-input" id="card" placeholder="4242 4242 4242 4242"
+               data-spectator-mask="true" maxlength="19" />
+        <div class="mask-note">
+          <svg viewBox="0 0 14 14" fill="none"><rect x="2.5" y="6" width="9" height="6" rx="0.5" stroke="currentColor" stroke-width="1"/><path d="M4.5 6V4a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1"/></svg>
+          Masked in session recording
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="expiry">Expiry</label>
+          <input type="text" class="form-input" id="expiry" placeholder="MM / YY"
+                 data-spectator-mask="true" maxlength="7" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cvv">Security code</label>
+          <input type="text" class="form-input" id="cvv" placeholder="CVV"
+                 data-spectator-mask="true" maxlength="3" />
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span class="total-label">Total · USD</span>
+        <span class="total-amount" id="order-total">$0</span>
+      </div>
+
+      <button class="btn btn-solid btn-full" style="margin-top: 32px;"
+              onclick="handlePurchase()">
+        Continue to payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Atelier</div>
+      <div class="brand-sub" style="margin-top: 8px;">Skin · Hair · Body — est. 2026</div>
+    </div>
+    <div class="footer-cols">
+      <div>
+        <strong>Shop</strong>
+        <a href="#">Skin</a>
+        <a href="#">Body</a>
+        <a href="#">Fragrance</a>
+      </div>
+      <div>
+        <strong>About</strong>
+        <a href="#">Philosophy</a>
+        <a href="#">Stores</a>
+        <a href="#">Contact</a>
+      </div>
+      <div>
+        <strong>Service</strong>
+        <a href="#">Shipping</a>
+        <a href="#">Returns</a>
+        <a href="#">FAQ</a>
+      </div>
+    </div>
+  </div>
+  <p class="footer-note">A Spectator session-replay demonstration · 2026</p>
+</footer>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast">Added to bag</div>
+
+<!-- ─── SESSION ID ─── -->
+<div id="session-id-display"></div>
+
+<script type="module">
+  import { Spectator } from "./dist/index.js";
+
+  // Photos sourced from Unsplash (free license, no attribution required).
+  const UNSPLASH = (id, w = 800) =>
+    `https://images.unsplash.com/photo-${id}?w=${w}&q=85&auto=format&fit=crop`;
+
+  // Eight Aesop-inspired apothecary products. Names are descriptive and
+  // botanical — the kind of cataloguing that fits an "atelier" brand.
+  const PRODUCTS = [
+    { name: "Resurrection Aromatique Hand Wash", sub: "Mandarin rind, rosemary, cedar atlas", vol: "500 mL", price: 39,                          img: UNSPLASH("1556228720-195a672e8a03") },
+    { name: "Geranium Leaf Body Cleanser",       sub: "Geranium, mandarin, bergamot",          vol: "500 mL", price: 45,                          img: UNSPLASH("1608248543803-ba4f8c70ae0b") },
+    { name: "Parsley Seed Anti-Oxidant Serum",   sub: "Parsley seed, rosemary leaf",           vol: "60 mL",  price: 115, tag: "New",             img: UNSPLASH("1620916566398-39f1143ab7be") },
+    { name: "Marrakech Intense Eau de Toilette", sub: "Cardamom, sandalwood, neroli",          vol: "50 mL",  price: 190,                         img: UNSPLASH("1592945403244-b3fbafd7f539") },
+    { name: "Rind Concentrate Body Balm",        sub: "Mandarin, grapefruit, sweet orange",    vol: "120 mL", price: 75,  tag: "Bestseller",      img: UNSPLASH("1571781926291-c477ebfd024b") },
+    { name: "In Two Minds Facial Toner",         sub: "Sage, salicylic acid, witch hazel",     vol: "100 mL", price: 58,                          img: UNSPLASH("1612817288484-6f916006741a") },
+    { name: "Aganice Aromatique Candle",         sub: "Tobacco, patchouli, sandalwood",        vol: "230 g",  price: 130, tag: "New",             img: UNSPLASH("1603006905003-be475563bc59") },
+    { name: "Tacit Eau de Parfum",               sub: "Yuzu, basil, vetiver",                  vol: "50 mL",  price: 170,                         img: UNSPLASH("1615634260167-c8cdede054de") },
+  ];
+
+  const grid = document.getElementById("products");
+  PRODUCTS.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const tagHtml = p.tag
+      ? `<div class="card-tag${p.tag === "Bestseller" ? " bestseller" : ""}">${p.tag}</div>`
+      : "";
+
+    card.innerHTML = `
+      <div class="card-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        ${tagHtml}
+      </div>
+      <div class="card-name">${p.name}</div>
+      <div class="card-sub">${p.sub}</div>
+      <div class="card-meta">
+        <span class="card-vol">${p.vol}</span>
+        <span class="card-price">$${p.price}</span>
+      </div>
+      <button class="card-cta" type="button">Add to bag</button>
+    `;
+
+    card.querySelector(".card-cta").addEventListener("click", (e) => {
+      e.stopPropagation();
+      addToCart(p);
+    });
+    card.addEventListener("click", () => addToCart(p));
+    grid.appendChild(card);
+  });
+
+  // ── Cart ──
+  window.cartCount = 0;
+  let cartTotal = 0;
+  window.addToCart = (product) => {
+    window.cartCount++;
+    cartTotal += product.price;
+    document.getElementById("cart-badge").textContent = window.cartCount;
+    document.getElementById("order-total").textContent = `$${cartTotal.toLocaleString()}`;
+    const toast = document.getElementById("toast");
+    toast.textContent = `${product.name} · added to bag`;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  };
+
+  window.scrollToCheckout = function() {
+    document.getElementById("checkout").scrollIntoView({ behavior: "smooth" });
+  };
+
+  // ── Recording ──
+  let recorder = null;
+  let eventTick = 0;
+
+  // Build the ingest URL. Precedence:
+  //   1. ?server=… query param (e.g. ?server=https://spectator-server.up.railway.app)
+  //   2. same host as this page when served over http(s)
+  //   3. ws://localhost:8080 (local dev default)
+  function resolveServerUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const override = params.get("server");
+    if (override) {
+      const wsScheme = override.replace(/^http/, "ws");
+      return wsScheme.replace(/\/$/, "") + "/ingest";
+    }
+    if (window.location.protocol === "https:") {
+      return `wss://${window.location.host}/ingest`;
+    }
+    if (window.location.protocol === "http:" && window.location.host && !window.location.host.startsWith("localhost")) {
+      return `ws://${window.location.host}/ingest`;
+    }
+    return "ws://localhost:8080/ingest";
+  }
+
+  window.startRecording = function() {
+    if (recorder) recorder.stop();
+    eventTick = 0;
+    const serverUrl = resolveServerUrl();
+    recorder = Spectator.start({
+      serverUrl,
+      maskInputs: true,
+    });
+    document.getElementById("rec-indicator").classList.add("visible");
+    document.getElementById("session-id-display").textContent = recorder.sessionId;
+    const ticker = setInterval(() => {
+      if (!recorder) { clearInterval(ticker); return; }
+      eventTick++;
+      document.getElementById("event-count").textContent = (eventTick * 3) + " events";
+    }, 900);
+    console.log("[Atelier × Spectator] Recording:", recorder.sessionId, "→", serverUrl);
+  };
+
+  window.stopRecording = function() {
+    if (!recorder) return;
+    recorder.stop();
+    recorder = null;
+    document.getElementById("rec-indicator").classList.remove("visible");
+    document.getElementById("session-id-display").textContent = "";
+    alert("Session saved.\nOpen localhost:5173 to replay.");
+  };
+
+  window.handlePurchase = function() {
+    alert("Order placed.\nCheck the replay — card details are masked.");
+  };
+
+  window.addEventListener("load", () => setTimeout(window.startRecording, 600));
+</script>
+</body>
+</html>

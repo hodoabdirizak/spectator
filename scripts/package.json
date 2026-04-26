@@ -1,0 +1,13 @@
+{
+  "name": "spectator-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One-off tooling for Spectator (e.g. screenshot capture).",
+  "scripts": {
+    "screenshots": "node capture-screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

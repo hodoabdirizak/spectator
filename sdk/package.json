@@ -1,0 +1,48 @@
+{
+  "name": "spectator-sdk",
+  "version": "0.1.0",
+  "description": "Lightweight browser session-recording SDK — DOM snapshots, MutationObserver streaming, batched WebSocket transport.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "demo": "node server.js"
+  },
+  "keywords": [
+    "session-replay",
+    "session-recording",
+    "user-analytics",
+    "heatmap",
+    "rrweb",
+    "fullstory",
+    "logrocket",
+    "mutation-observer",
+    "websocket",
+    "typescript"
+  ],
+  "author": "Hodo Abdirizak",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hodoabdirizak/spectator.git",
+    "directory": "sdk"
+  },
+  "homepage": "https://github.com/hodoabdirizak/spectator#readme",
+  "bugs": {
+    "url": "https://github.com/hodoabdirizak/spectator/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

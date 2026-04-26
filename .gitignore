@@ -1,0 +1,59 @@
+# Build artifacts
+**/dist/
+**/build/
+**/.next/
+**/.turbo/
+
+# Compiled Go binaries
+server/spectator
+server/spectator-server
+server/*.test
+server/coverage.out
+server/coverage.html
+
+# Node
+**/node_modules/
+**/.pnpm-store/
+**/.npm/
+**/.yarn/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local DB / data
+*.sqlite
+*.sqlite3
+*.db
+postgres-data/
+data/
+
+# OS junk
+.DS_Store
+Thumbs.db
+*~
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# Editor swap files
+*.swp
+*.swo
+
+# Vite / TS caches
+**/.vite/
+**/tsconfig.tsbuildinfo
+
+# Test coverage
+coverage/
+.nyc_output/

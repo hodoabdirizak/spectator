@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spectator SDK — Serialize Test</title>
+  <style>
+    body { font-family: system-ui; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    .test-area { background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 4px; }
+    pre { background: #1a1a2e; color: #e0e0e0; padding: 16px; border-radius: 8px; overflow-x: auto; max-height: 500px; }
+    .pass { color: #4caf50; font-weight: bold; }
+    .fail { color: #f44336; font-weight: bold; }
+    #results { margin-top: 20px; }
+    h3 { margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <h1>Serialize.ts — Test Page</h1>
+  <p>Open your browser console too (Cmd+Option+J) for extra detail.</p>
+
+  <!-- This is the DOM we'll serialize — intentionally varied to test edge cases -->
+  <div id="test-area" class="test-area" data-role="example">
+    <h2>Test Content</h2>
+    <p>A paragraph with <strong>bold</strong> and <em>italic</em> text.</p>
+    <input type="text" placeholder="A form input" />
+    <ul>
+      <li>Item 1</li>
+      <li>Item 2</li>
+    </ul>
+    <script>console.log("this script should be SKIPPED")</script>
+    <noscript>This should also be skipped</noscript>
+    <!-- This is a comment node — should return null -->
+  </div>
+
+  <button onclick="runTests()">Run Tests</button>
+  <button onclick="snapshotFullPage()">Snapshot Full Page</button>
+
+  <div id="results"></div>
+  <pre id="output"></pre>
+
+  <!-- Requires a prior `npm run build` to produce dist/serialize.js -->
+  <script type="module">
+    import { getNodeId, serializeNode, takeFullSnapshot, lookupNodeId } from "./dist/serialize.js";
+
+    // Make functions available globally so the buttons work
+    window.getNodeId = getNodeId;
+    window.serializeNode = serializeNode;
+    window.takeFullSnapshot = takeFullSnapshot;
+    window.lookupNodeId = lookupNodeId;
+
+    window.runTests = function() {
+      const results = document.getElementById("results");
+      const output = document.getElementById("output");
+      let passed = 0;
+      let failed = 0;
+
+      function assert(name, condition, detail) {
+        if (condition) {
+          passed++;
+          results.innerHTML += `<div class="pass">✓ ${name}</div>`;
+        } else {
+          failed++;
+          results.innerHTML += `<div class="fail">✗ ${name} — ${detail || "failed"}</div>`;
+        }
+      }
+
+      results.innerHTML = "<h3>Test Results</h3>";
+
+      // ---- Test 1: getNodeId returns stable IDs ----
+      const div = document.getElementById("test-area");
+      const id1 = getNodeId(div);
+      const id2 = getNodeId(div);
+      assert(
+        "getNodeId returns same ID for same node",
+        id1 === id2,
+        `Got ${id1} then ${id2}`
+      );
+
+      // ---- Test 2: getNodeId assigns different IDs to different nodes ----
+      const body = document.body;
+      const bodyId = getNodeId(body);
+      assert(
+        "getNodeId assigns different IDs to different nodes",
+        id1 !== bodyId,
+        `div=${id1}, body=${bodyId}`
+      );
+
+      // ---- Test 3: serializeNode handles an element ----
+      const serializedDiv = serializeNode(div);
+      assert(
+        "serializeNode returns an object for a div",
+        serializedDiv !== null && typeof serializedDiv === "object",
+        `Got ${typeof serializedDiv}`
+      );
+      assert(
+        "Serialized div has type ELEMENT_NODE (1)",
+        serializedDiv?.type === 1,
+        `Got type=${serializedDiv?.type}`
+      );
+      assert(
+        "Serialized div has tagName",
+        serializedDiv?.tagName === "DIV",
+        `Got tagName=${serializedDiv?.tagName}`
+      );
+      assert(
+        "Serialized div has attributes",
+        serializedDiv?.attributes?.id === "test-area" && serializedDiv?.attributes?.["data-role"] === "example",
+        `Got attributes=${JSON.stringify(serializedDiv?.attributes)}`
+      );
+      assert(
+        "Serialized div has children array",
+        Array.isArray(serializedDiv?.children) && serializedDiv.children.length > 0,
+        `Got ${serializedDiv?.children?.length} children`
+      );
+
+      // ---- Test 4: Text nodes are serialized correctly ----
+      const h2 = div.querySelector("h2");
+      const serializedH2 = serializeNode(h2);
+      const textChild = serializedH2?.children?.find(c => c.type === 3);
+      assert(
+        "Text nodes are captured with textContent",
+        textChild?.textContent === "Test Content",
+        `Got textContent="${textChild?.textContent}"`
+      );
+
+      // ---- Test 5: Script tags are skipped ----
+      const allChildren = serializedDiv?.children || [];
+      const hasScript = allChildren.some(c => c.tagName === "SCRIPT");
+      const hasNoscript = allChildren.some(c => c.tagName === "NOSCRIPT");
+      assert(
+        "<script> tags are skipped",
+        !hasScript,
+        "Found a SCRIPT in children"
+      );
+      assert(
+        "<noscript> tags are skipped",
+        !hasNoscript,
+        "Found a NOSCRIPT in children"
+      );
+
+      // ---- Test 6: Comment nodes are skipped ----
+      const hasComment = allChildren.some(c => c.type === 8); // COMMENT_NODE = 8
+      assert(
+        "Comment nodes return null (skipped)",
+        !hasComment,
+        "Found a comment node in children"
+      );
+
+      // ---- Test 7: takeFullSnapshot works on the whole document ----
+      const snapshot = takeFullSnapshot(document);
+      assert(
+        "takeFullSnapshot returns a node",
+        snapshot !== null,
+        "Got null"
+      );
+      assert(
+        "Full snapshot root is the HTML element",
+        snapshot?.tagName === "HTML",
+        `Got tagName=${snapshot?.tagName}`
+      );
+      assert(
+        "Full snapshot has HEAD and BODY children",
+        snapshot?.children?.some(c => c.tagName === "HEAD") && snapshot?.children?.some(c => c.tagName === "BODY"),
+        `Children: ${snapshot?.children?.map(c => c.tagName).join(", ")}`
+      );
+
+      // ---- Test 8: lookupNodeId works ----
+      const p = div.querySelector("p");
+      const pSerialized = serializeNode(p);
+      const pLookup = lookupNodeId(p);
+      assert(
+        "lookupNodeId finds a serialized node's ID",
+        pLookup !== undefined && pLookup === pSerialized?.id,
+        `lookupNodeId=${pLookup}, serialized.id=${pSerialized?.id}`
+      );
+      const newDiv = document.createElement("div"); // never serialized
+      assert(
+        "lookupNodeId returns undefined for unknown nodes",
+        lookupNodeId(newDiv) === undefined,
+        `Got ${lookupNodeId(newDiv)}`
+      );
+
+      // ---- Summary ----
+      results.innerHTML += `<h3>${passed} passed, ${failed} failed</h3>`;
+
+      // Also log the full snapshot for inspection
+      console.log("Full page snapshot:", snapshot);
+      output.textContent = JSON.stringify(snapshot, null, 2).slice(0, 3000) + "\n\n... (truncated)";
+    };
+
+    window.snapshotFullPage = function() {
+      const output = document.getElementById("output");
+      const snapshot = takeFullSnapshot(document);
+      const json = JSON.stringify(snapshot, null, 2);
+      output.textContent = json;
+      console.log("Full snapshot:", snapshot);
+      console.log(`Snapshot size: ${(json.length / 1024).toFixed(1)} KB`);
+    };
+  </script>
+</body>
+</html>

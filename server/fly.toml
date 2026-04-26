@@ -1,0 +1,42 @@
+# =============================================================
+# Fly.io config for the Spectator Go server
+# =============================================================
+# Deploy:
+#   cd server
+#   fly launch --no-deploy    # one-time: creates app + volume
+#   fly secrets set DATABASE_URL="postgres://...:...@host/db?sslmode=require"
+#   fly deploy
+#
+# We use force_https so WebSocket upgrades negotiate over wss://
+# automatically. The health check hits /healthz, which main.go
+# exposes as a tiny OK handler.
+# =============================================================
+
+app = "spectator-server"
+primary_region = "ewr"   # Newark — closest to NYC users
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  # DATABASE_URL is injected via `fly secrets` so it doesn't live here.
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false   # WS connections don't like auto-stop
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "256mb"

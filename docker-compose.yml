@@ -1,0 +1,36 @@
+# =============================================================
+# Spectator — local dev stack
+# =============================================================
+# Brings up Postgres for the persistent Store. Run the Go server
+# and the player separately (intentionally — faster inner loop).
+#
+#   docker compose up -d
+#   DATABASE_URL=postgres://spectator:spectator@localhost:5432/spectator?sslmode=disable \
+#     go run ./server
+#
+# Data persists in a named volume so stopping the compose stack
+# doesn't blow away your seeded sessions.
+# =============================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spectator-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: spectator
+      POSTGRES_PASSWORD: spectator
+      POSTGRES_DB: spectator
+    ports:
+      - "5432:5432"
+    volumes:
+      - spectator-db:/var/lib/postgresql/data
+      - ./server/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spectator -d spectator"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  spectator-db:
