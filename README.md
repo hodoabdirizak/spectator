@@ -1,12 +1,15 @@
 # Spectator — Browser Session Replay Engine
 
 [![ci](https://github.com/hodoabdirizak/spectator/actions/workflows/ci.yml/badge.svg)](https://github.com/hodoabdirizak/spectator/actions/workflows/ci.yml)
-[![player](https://img.shields.io/badge/player-vercel-black)](https://spectator-player.vercel.app)
-[![server](https://img.shields.io/badge/server-railway-6B5C46)](https://spectator-server.up.railway.app/healthz)
+[![player](https://img.shields.io/badge/player-vercel-000?logo=vercel)](https://spectator-player.vercel.app)
+[![server](https://img.shields.io/badge/server-fly.io-7B61FF?logo=flydotio)](https://spectator-server.fly.dev/healthz)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 A full-stack session replay system built from scratch. Records what users do in a browser (DOM state, mouse movements, clicks, scrolls, form input) and replays it frame-perfectly — like a DVR for web sessions. Supports **live spectating** of in-progress sessions, **click heatmaps**, **funnel analytics**, and a raw **event stream** explorer.
 
 Inspired by Fullstory, Hotjar, and LogRocket. Built to understand how they actually work.
+
+> **Live demo:** player at <https://spectator-player.vercel.app> · server at <https://spectator-server.fly.dev/healthz>
 
 ![Sessions list](docs/sessions.png)
 ![Replay engine](docs/replay.png)
@@ -15,7 +18,7 @@ Inspired by Fullstory, Hotjar, and LogRocket. Built to understand how they actua
 |---|---|---|
 | ![Click heatmap](docs/heatmaps.png) | ![Engagement funnel](docs/funnels.png) | ![Event stream](docs/events.png) |
 
-> **Stack:** TypeScript SDK → Go WebSocket server (in-memory or Postgres) → React replay player. Runs anywhere a Dockerfile runs — deploy notes below cover Railway + Vercel.
+> **Stack:** TypeScript SDK → Go WebSocket server (in-memory or Postgres) → React replay player. Runs anywhere a Dockerfile runs — deployed live to Fly.io + Vercel; instructions below also cover Railway.
 
 ---
 
@@ -254,51 +257,57 @@ Integration tests live behind a `//go:build integration` tag so the default `go 
 
 ## Deployment
 
-### Server → Railway (recommended)
+### Server → Fly.io (live)
 
-Railway auto-detects `server/Dockerfile` via the committed `railway.json` — no extra config.
-
-```bash
-# 1. Create the project
-railway init spectator
-
-# 2. Add the Postgres plugin — it injects DATABASE_URL automatically
-railway add --plugin postgres
-
-# 3. Lock CORS / WebSocket origin to your player domain (optional but recommended)
-railway variables set ALLOWED_ORIGINS="https://spectator-player.vercel.app"
-
-# 4. Deploy
-railway up
-```
-
-The `railway.json` pins `/healthz` as the health check and sets `restartPolicyType: ON_FAILURE`. Railway terminates TLS at the edge, so the player connects over `wss://` — `ReplayPlayer.tsx` derives that from `https://` automatically via `serverUrl.replace(/^http/, "ws")`.
-
-<details>
-<summary>Alternative: Fly.io</summary>
+The committed [`server/fly.toml`](server/fly.toml) is what's actually deployed at <https://spectator-server.fly.dev>:
 
 ```bash
 cd server
-fly launch --no-deploy
-fly secrets set DATABASE_URL="postgres://…@host/db?sslmode=require"
-fly deploy
+fly apps create spectator-server
+fly deploy --remote-only
+# → Two app machines on shared-cpu-1x / 256 MB in `ewr` (Newark, closest to NYC)
 ```
 
-`fly.toml` pins `auto_stop_machines = false` and `min_machines_running = 1` — WebSocket connections don't like auto-scale-to-zero. `force_https = true` auto-upgrades `ws://` → `wss://`.
+`fly.toml` pins `auto_stop_machines = false` + `min_machines_running = 1` (WebSockets don't like cold starts) and `force_https = true` so the player connects over `wss://` — [`ReplayPlayer.tsx`](player/src/ReplayPlayer.tsx) derives that from `https://` via `serverUrl.replace(/^http/, "ws")`.
+
+To attach Postgres for persistence, add Neon / Supabase / Fly's own Postgres and:
+
+```bash
+fly secrets set DATABASE_URL="postgres://…@host/db?sslmode=require"
+fly deploy --remote-only
+```
+
+The server falls back to the in-memory store automatically when `DATABASE_URL` is unset, so the demo above is fully working without any database attached.
+
+<details>
+<summary>Alternative: Railway</summary>
+
+Railway auto-detects `server/Dockerfile` via the committed [`railway.json`](railway.json):
+
+```bash
+railway init spectator
+railway add --database postgres                       # injects DATABASE_URL
+railway variables set ALLOWED_ORIGINS="https://spectator-player.vercel.app"
+railway up
+```
+
+The `railway.json` pins `/healthz` as the health check and sets `restartPolicyType: ON_FAILURE`.
 </details>
 
-The Dockerfile is a multi-stage Alpine builder → `distroless/static-debian12:nonroot` (≈15 MB final image, no shell, no package manager).
+The Dockerfile is a multi-stage Alpine builder → `distroless/static-debian12:nonroot` (~3 MB final image, no shell, no package manager).
 
-### Player → Vercel
+### Player → Vercel (live)
+
+Live at <https://spectator-player.vercel.app>, wired to the Fly server:
 
 ```bash
 cd player
-vercel
-# In Vercel's env UI, set:
-#   VITE_SERVER_URL = https://spectator-server.up.railway.app
+vercel link --project spectator-player
+echo "https://spectator-server.fly.dev" | vercel env add VITE_SERVER_URL production
+vercel --prod
 ```
 
-`vercel.json` handles SPA rewrites and sets `Cache-Control: public, max-age=31536000, immutable` on hashed assets.
+[`vercel.json`](player/vercel.json) handles SPA rewrites and sets `Cache-Control: public, max-age=31536000, immutable` on hashed assets so subsequent loads are served from the edge.
 
 ### Postgres → Railway plugin / Neon / Supabase
 
