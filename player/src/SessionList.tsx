@@ -185,23 +185,82 @@ export const SessionList: React.FC<SessionListProps> = ({ serverUrl, onSelectSes
 
         {!loading && !error && sessions.length === 0 && (
           <div style={{ padding: "64px 32px" }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: D.text, marginBottom: 8, letterSpacing: "-0.01em" }}>
-              No sessions recorded yet
+            <div style={{
+              display: "inline-block",
+              fontSize: 10, fontWeight: 600, letterSpacing: "0.12em",
+              textTransform: "uppercase", color: D.accent,
+              padding: "4px 10px", borderRadius: 4,
+              background: D.accentBg, border: `1px solid ${D.accent}33`,
+              marginBottom: 16,
+            }}>
+              Try the live demo
             </div>
-            <div style={{ fontSize: 13, color: D.textMid, lineHeight: 1.75, maxWidth: 420, marginBottom: 28 }}>
-              Add the Spectator SDK to any page. Sessions stream in here automatically and can be replayed or watched live.
+            <div style={{ fontSize: 18, fontWeight: 600, color: D.text, marginBottom: 10, letterSpacing: "-0.01em" }}>
+              Record a session in 30 seconds
+            </div>
+            <div style={{ fontSize: 13, color: D.textMid, lineHeight: 1.75, maxWidth: 460, marginBottom: 24 }}>
+              No sessions yet. Open the demo store, click around the shopfront,
+              fill the checkout — your session streams here in real time, then
+              replay it with click heatmaps, funnels, and the full event stream.
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 36 }}>
+              <a
+                href="/demo/"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "10px 18px",
+                  background: D.accent, color: "#fff",
+                  fontSize: 13, fontWeight: 500,
+                  borderRadius: 7, textDecoration: "none",
+                  transition: "opacity 0.15s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+              >
+                Open demo store →
+              </a>
+              <a
+                href="https://github.com/hodoabdirizak/spectator"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "10px 18px",
+                  background: "transparent", color: D.textMid,
+                  border: `1px solid ${D.border2}`,
+                  fontSize: 13, fontWeight: 500,
+                  borderRadius: 7, textDecoration: "none",
+                  transition: "color 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = D.text;
+                  e.currentTarget.style.borderColor = D.textMid;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = D.textMid;
+                  e.currentTarget.style.borderColor = D.border2;
+                }}
+              >
+                View source on GitHub
+              </a>
+            </div>
+
+            <div style={{ fontSize: 11, color: D.textDim, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }}>
+              Or instrument your own page
             </div>
             <pre style={{
               background: D.card, border: `1px solid ${D.border2}`,
               borderRadius: 8, padding: "16px 20px",
               fontSize: 12, color: D.textMid,
               fontFamily: "'Courier New', monospace", lineHeight: 1.9,
-              maxWidth: 420,
+              maxWidth: 460,
             }}>
 {`import { Spectator } from "spectator-sdk";
 
 Spectator.start({
-  serverUrl: "ws://localhost:8080/ingest",
+  serverUrl: "wss://spectator-server.fly.dev/ingest",
   maskInputs: true,
 });`}
             </pre>
